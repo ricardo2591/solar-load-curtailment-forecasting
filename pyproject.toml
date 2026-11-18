@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "solar-load-curtailment-forecasting"
+version = "2.0.0"
+description = "Physics-informed 15-minute solar generation (under curtailment) and telecom load demand forecasting for hybrid microgrids."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Ricardo Burgos" }
+]
+keywords = [
+  "machine-learning",
+  "solar-forecasting",
+  "curtailment",
+  "microgrids",
+  "polars",
+  "lightgbm",
+  "pvlib",
+  "time-series",
+]
+dependencies = [
+  "joblib>=1.3.0",
+  "lightgbm>=4.3.0",
+  "matplotlib>=3.8.0",
+  "numpy>=1.26.0",
+  "pandas>=2.1.0",
+  "polars>=1.10.0",
+  "pvlib>=0.11.0",
+  "pyyaml>=6.0.1",
+  "scikit-learn>=1.4.0",
+  "seaborn>=0.13.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "ipykernel>=6.29.0",
+  "nbconvert>=7.16.0",
+  "nbformat>=5.10.0",
+  "pytest>=8.0.0",
+  "ruff>=0.6.0",
+]
+
+[project.scripts]
+mg-generate-sample = "microgrid_ml.cli:generate_sample_cmd"
+mg-prepare-features = "microgrid_ml.cli:prepare_features_cmd"
+mg-train = "microgrid_ml.cli:train_cmd"
+mg-predict = "microgrid_ml.cli:predict_cmd"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["notebooks"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B"]
+ignore = ["E501"]

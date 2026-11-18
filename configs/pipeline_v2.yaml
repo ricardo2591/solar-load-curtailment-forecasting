@@ -1,0 +1,65 @@
+# Configuration for the V2 Physics-Informed Microgrid Forecasting Pipeline
+# All paths are resolved relative to the repository root.
+
+paths:
+  sample_raw_parquet: "data/sample/microgrid_sample_15min.parquet"
+  processed_features_parquet: "data/processed/microgrid_solar_daytime_15min.parquet"
+  models_dir: "models"
+  figures_dir: "reports/figures"
+
+synthetic_sample:
+  seed: 42
+  n_sites: 10
+  start_date: "2026-01-01T00:00:00"
+  end_date: "2026-09-10T23:45:00"
+  freq_minutes: 15
+  offline_rate: 0.08
+
+split:
+  val_start: "2026-06-01T00:00:00"
+  test_start: "2026-07-01T00:00:00"
+
+physics:
+  rain_wash_threshold_mm: 2.0
+  curtailment_soc_threshold_pct: 95.0
+  curtailment_load_threshold_kw: 1.0
+  curtailment_poa_threshold_w_m2: 200.0
+  daytime_poa_min_w_m2: 5.0
+  sun_up_zenith_max_deg: 85.0
+  capacity_factor_clip_max: 1.25
+  solar_overpower_clip_ratio: 1.30
+  dormant_site_max_cf: 0.05
+  extraterrestrial_irradiance_w_m2: 1361.0
+  default_tilt_deg: 15.0
+  default_azimuth_deg: 180.0
+
+sample_weights:
+  curtailment_multiplier: 2.5
+  high_poa_threshold_w_m2: 650.0
+  high_poa_multiplier: 1.5
+  low_poa_threshold_w_m2: 150.0
+  low_poa_multiplier: 1.3
+
+models:
+  solar_v2:
+    learning_rate: 0.025
+    num_leaves: 128
+    max_depth: -1
+    min_child_samples: 120
+    subsample: 0.8
+    colsample_bytree: 0.65
+    num_boost_round: 2500
+    early_stopping_rounds: 50
+    random_state: 42
+  load_v2:
+    learning_rate: 0.03
+    num_leaves: 64
+    subsample: 0.8
+    colsample_bytree: 0.7
+    num_boost_round: 1000
+    early_stopping_rounds: 40
+    random_state: 42
+
+inference:
+  diesel_price_usd_per_liter: 1.10
+  diesel_liters_per_kwh: 0.30

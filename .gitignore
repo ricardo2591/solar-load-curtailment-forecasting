@@ -1,0 +1,58 @@
+# ==============================================================================
+# Strict Confidentiality & Heavy-Binary .gitignore
+# ==============================================================================
+
+# Python & environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+
+# Secrets & local configs
+.env
+.env.*
+!.env.example
+
+# Jupyter & caches
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Raw & processed production datasets (NEVER commit real telemetry or large files)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+*.csv
+*.csv.gz
+*.parquet
+!data/sample/*.parquet
+
+# Spreadsheets, GIS/KML & proprietary exports
+*.xlsx
+*.xls
+*.kml
+*.kmz
+
+# Serialized ML binaries (reproduced locally via training pipeline)
+models/*.joblib
+models/*.pkl
+models/*.onnx
+models/*.parquet
+!models/.gitkeep
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
