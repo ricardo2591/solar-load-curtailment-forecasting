@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+import pandas as pd
 import polars as pl
 import pvlib
 
@@ -19,26 +20,28 @@ def compute_solar_geometry_and_poa(
     default_azimuth = float(cfg.get("default_azimuth_deg", 180.0))
     sun_up_max_zenith = float(cfg.get("sun_up_zenith_max_deg", 85.0))
 
-    unique_times = (
+    unique_time_series = (
         df.select("time_utc_dt")
         .unique()
         .sort("time_utc_dt")["time_utc_dt"]
-        .to_pandas()
     )
+    unique_times = pd.DatetimeIndex(unique_time_series.to_list())
+    if unique_times.tz is None:
+        unique_times = unique_times.tz_localize("UTC")
+
     coords_unique = (
         df.filter((pl.col("latitude") != 0.0) & (pl.col("longitude") != 0.0))
         .select(["latitude", "longitude"])
         .unique()
-        .to_pandas()
     )
 
     zenith_records: list[pl.DataFrame] = []
     seen_keys: set[tuple[float, float]] = set()
-    time_utc_values = unique_times.values
+    time_utc_values = unique_times.tz_convert("UTC").tz_localize(None).to_numpy()
 
-    for _, row in coords_unique.iterrows():
-        lat_k = round(float(row["latitude"]), 3)
-        lon_k = round(float(row["longitude"]), 3)
+    for lat_val, lon_val in coords_unique.iter_rows():
+        lat_k = round(float(lat_val), 3)
+        lon_k = round(float(lon_val), 3)
         key = (lat_k, lon_k)
         if key in seen_keys:
             continue
