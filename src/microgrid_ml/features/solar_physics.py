@@ -37,7 +37,6 @@ def compute_solar_geometry_and_poa(
 
     zenith_records: list[pl.DataFrame] = []
     seen_keys: set[tuple[float, float]] = set()
-    time_utc_values = unique_times.tz_convert("UTC").tz_localize(None).to_numpy()
 
     for lat_val, lon_val in coords_unique.iter_rows():
         lat_k = round(float(lat_val), 3)
@@ -58,16 +57,16 @@ def compute_solar_geometry_and_poa(
                 {
                     "lat_k": np.full(len(unique_times), lat_k, dtype=np.float32),
                     "lon_k": np.full(len(unique_times), lon_k, dtype=np.float32),
-                    "time_utc_dt": time_utc_values,
+                    "time_utc_dt": unique_time_series,
                     "apparent_zenith_deg": solpos["apparent_zenith"].to_numpy(dtype=np.float32),
                     "solar_azimuth_deg": solpos["azimuth"].to_numpy(dtype=np.float32),
                 }
             )
         )
 
-    df_solpos = pl.concat(zenith_records).with_columns(
-        pl.col("time_utc_dt").dt.replace_time_zone("UTC")
-    )
+    df_solpos = pl.concat(zenith_records)
+    if df_solpos["time_utc_dt"].dtype.time_zone is None:
+        df_solpos = df_solpos.with_columns(pl.col("time_utc_dt").dt.replace_time_zone("UTC"))
 
     df_joined = (
         df.with_columns(
